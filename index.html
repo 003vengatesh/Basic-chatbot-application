@@ -1,268 +1,801 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Chatbot Acer</title>
-    <link rel="manifest" href="manifest.json">
+
     <style>
+
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+
+
         body {
+
             font-family: 'Roboto', sans-serif;
+
             margin: 0;
+
             padding: 0;
+
             display: flex;
+
             justify-content: center;
+
             align-items: center;
+
             height: 100vh;
+
             width: 100vw;
+
             background-color: #f0f0f0;
+
             color: #000;
+
             transition: all 0.3s ease;
+
         }
+
+
 
         body.dark-mode {
+
             background-color: #121212;
+
             color: #ffffff;
+
         }
+
+
 
         .chat-container {
+
             width: 100%;
+
             height: 100%;
+
             max-width: 100%;
+
             max-height: 100%;
+
             background-color: white;
+
             border-radius: 0;
+
             box-shadow: none;
+
             display: flex;
+
             flex-direction: column;
+
             padding: 20px;
+
             position: relative;
+
             transition: all 0.3s ease;
+
         }
+
+
 
         body.dark-mode .chat-container {
+
             background-color: #1e1e1e;
+
             box-shadow: none;
+
         }
+
+
 
         .header {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             margin-bottom: 10px;
+
         }
+
+
 
         .header h2 {
+
             font-size: 24px;
+
             color: inherit;
+
             margin: 0;
+
             font-weight: 500;
+
         }
+
+
 
         .header button {
+
             background: none;
+
             border: none;
+
             color: inherit;
+
             font-size: 18px;
+
             cursor: pointer;
+
             transition: all 0.3s ease;
+
         }
+
+
 
         .header button:hover {
+
             color: #66bb6a;
+
         }
+
+
 
         .chat-box {
+
             flex-grow: 1;
+
             overflow-y: auto;
+
             margin-bottom: 10px;
+
             padding: 10px;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 10px;
+
             scrollbar-width: thin;
+
         }
+
+
 
         .user-msg, .bot-msg {
+
             padding: 12px 18px;
+
             border-radius: 20px;
+
             max-width: 70%;
+
             border: 2px solid #ccc;
+
             animation: fadeIn 0.5s ease;
+
         }
+
+
 
         .user-msg {
+
             align-self: flex-start;
+
             background-color: #fff;
+
             color: #000;
+
         }
+
+
 
         body.dark-mode .user-msg {
+
             background-color: #333;
+
             color: #fff;
+
             border-color: #555;
+
         }
+
+
 
         .bot-msg {
+
             align-self: flex-end;
+
             background-color: #fff;
+
             color: black;
+
         }
+
+
 
         body.dark-mode .bot-msg {
+
             background-color: #333;
+
             color: #fff;
+
             border-color: #555;
+
         }
+
+
 
         .input-box {
+
             display: flex;
+
             gap: 10px;
+
             position: absolute;
+
             bottom: 20px;
+
             width: calc(100% - 40px);
+
         }
+
+
 
         .input-box input {
+
             flex-grow: 1;
+
             padding: 12px;
+
             border: 1px solid #ddd;
+
             border-radius: 25px;
+
             font-size: 14px;
+
             outline: none;
+
             background-color: #fff;
+
             color: #000;
+
             transition: all 0.3s;
+
         }
+
+
 
         body.dark-mode .input-box input {
+
             background-color: #333;
+
             color: #fff;
+
             border-color: #555;
+
         }
+
+
 
         .input-box button {
+
             padding: 12px;
+
             background-color: #fff;
+
             color: black;
+
             border: 1px solid #ddd;
+
             border-radius: 25px;
+
             cursor: pointer;
+
             font-size: 22px;
+
             transition: transform 0.2s ease;
+
         }
+
+
 
         .input-box button:hover {
+
             transform: scale(1.1);
+
         }
+
+
 
         body.dark-mode .input-box button {
+
             background-color: #333;
+
             color: #fff;
+
             border-color: #555;
+
         }
+
+
 
         @keyframes fadeIn {
+
             from {
+
                 opacity: 0;
+
             }
+
             to {
+
                 opacity: 1;
+
             }
+
         }
+
     </style>
+
 </head>
+
 <body>
 
+
+
     <div class="chat-container">
+
         <div class="header">
+
             <h2>Acer Silva</h2>
+
             <div>
+
                 <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+
                 <button onclick="refreshChat()">🔄</button>
+
             </div>
+
         </div>
+
         <div class="chat-box" id="chat-box">
+
             <div class="bot-msg">Hi! I'm Acer Silva, your clothing assistant! How can I help you?</div>
+
         </div>
+
         <div class="input-box">
+
             <input type="text" id="user-input" placeholder="Ask me anything..." onkeydown="handleKeyPress(event)">
+
             <button onclick="sendMessage()">📤</button>
+
         </div>
+
     </div>
 
+
+
     <script>
+
+        const customQA = {
+
+            "who are you": "I'm Acer Silva, your AI Assistant!",
+
+            "what is your name": "My name is Acer Silva.",
+
+            "what do you do": "I help with clothing and fashion advice.",
+
+  "capital of tamilnadu": "The capital of Tamil Nadu is Chennai.",
+
+  "chief minister of tamilnadu": "The Chief Minister of Tamil Nadu is M. K. Stalin.",
+
+  "language spoken in tamilnadu": "The primary language spoken in Tamil Nadu is Tamil.",
+
+  "population of tamilnadu": "The population of Tamil Nadu is approximately 77 million as of the latest census.",
+
+  "meenakshi temple location": "The Meenakshi Temple is located in Madurai, Tamil Nadu.",
+
+  "first chief minister of tamilnadu": "The first Chief Minister of Tamil Nadu was A. Subbarayalu Reddiar.",
+
+  "famous dance form of tamilnadu": "Bharatanatyam is the famous classical dance form originating from Tamil Nadu.",
+
+  "currency of india": "The currency of India is the Indian Rupee (INR).",
+
+  "national animal of india": "The national animal of India is the Bengal Tiger.",
+
+  "national flower of india": "The national flower of India is the Lotus.",
+
+  "national bird of india": "The national bird of India is the Indian Peafowl (Peacock).",
+
+  "capital of india": "The capital of India is New Delhi.",
+
+  "current prime minister of india": "The current Prime Minister of India is Narendra Modi.",
+
+  "population of india": "The population of India is approximately 1.42 billion as of the latest estimate.",
+
+  "taj mahal location": "The Taj Mahal is located in Agra, Uttar Pradesh, India.",
+
+  "father of the nation in india": "Mahatma Gandhi is considered the Father of the Nation in India.",
+
+  "currency of tamilnadu": "Tamil Nadu uses the Indian Rupee (INR) as its currency.",
+
+  "famous singer from tamilnadu": "A. R. Rahman, a renowned music composer and singer, is from Tamil Nadu.",
+
+  "main festival celebrated in tamilnadu": "The main festival celebrated in Tamil Nadu is Pongal, a harvest festival.",
+
+  "longest river in tamilnadu": "The longest river in Tamil Nadu is the Kaveri River.",
+
+  "marina beach location": "Marina Beach is located in Chennai, Tamil Nadu.",
+
+  "famous leader from tamilnadu": "M. Karunanidhi and J. Jayalalithaa are famous political leaders from Tamil Nadu.",
+
+  "official language of tamilnadu": "The official language of Tamil Nadu is Tamil.",
+
+  "largest city in tamilnadu": "The largest city in Tamil Nadu is Chennai.",
+
+  "brihadeeswarar temple location": "The Brihadeeswarar Temple is located in Thanjavur, Tamil Nadu.",
+
+  "who built brihadeeswarar temple": "The Brihadeeswarar Temple was built by the Chola king Raja Raja Chola I.",
+
+  "significance of the kumbh mela": "The Kumbh Mela is a major Hindu festival and pilgrimage, celebrated in four places in India, where millions gather to bathe in sacred rivers.",
+
+  "largest state in india by area": "Rajasthan is the largest state in India by area.",
+
+  "smallest state in india": "Goa is the smallest state in India by area.",
+
+  "currency of the united states": "The currency of the United States is the US Dollar (USD).",
+
+  "president of the united states": "The current President of the United States is Joe Biden.",
+
+  "population of the united states": "The population of the United States is approximately 331 million as of the latest estimate.",
+
+  "tallest mountain in the world": "The tallest mountain in the world is Mount Everest, located in the Himalayas.",
+
+  "capital of japan": "The capital of Japan is Tokyo.",
+
+  "current prime minister of japan": "The current Prime Minister of Japan is Fumio Kishida.",
+
+  "official language of the united states": "The United States does not have an official language, though English is the de facto national language.",
+
+  "eiffel tower location": "The Eiffel Tower is located in Paris, France.",
+
+  "invented the telephone": "The telephone was invented by Alexander Graham Bell.",
+
+  "longest river in the world": "The longest river in the world is the Nile River, followed closely by the Amazon River.",
+
+  "founder of microsoft": "The founder of Microsoft is Bill Gates.",
+
+  "largest country in the world by area": "Russia is the largest country in the world by area.",
+
+  "first man to walk on the moon": "Neil Armstrong was the first man to walk on the moon.",
+
+  "founder of facebook": "The founder of Facebook is Mark Zuckerberg.",
+
+  "great wall of china location": "The Great Wall of China stretches across northern China.",
+
+  "richest person in the world": "As of the latest data, Elon Musk and Bernard Arnault are the richest people in the world, depending on market fluctuations.",
+
+  "population of china": "The population of China is approximately 1.41 billion as of the latest estimate.",
+
+  "invented the light bulb": "The light bulb was invented by Thomas Edison.",
+
+  
+
+  "discovered america": "Christopher Columbus is credited with discovering America in 1492.",
+
+  "largest ocean in the world": "The Pacific Ocean is the largest ocean in the world.",
+
+  "first emperor of china": "The first emperor of China was Qin Shi Huang.",
+
+  "grand canyon location": "The Grand Canyon is located in Arizona, United States.",
+
+  "first woman to fly solo across the atlantic": "Amelia Earhart was the first woman to fly solo across the Atlantic.",
+
+  "national anthem of india": "The national anthem of India is 'Jana Gana Mana.'",
+
+  "wrote the national anthem of india": "The national anthem of India, 'Jana Gana Mana,' was written by Rabindranath Tagore.",
+
+  "largest island in the world": "Greenland is the largest island in the world.",
+
+  "famous scientist from india": "Dr. C. V. Raman, who won the Nobel Prize in Physics, is one of the most famous scientists from India.",
+
+  "colosseum location": "The Colosseum is located in Rome, Italy.",
+
+  "richest man in india": "As of the latest data, Mukesh Ambani is the richest man in India.",
+
+  "national flower of tamilnadu": "The national flower of Tamil Nadu is the Gloriosa Lily, known as 'Surulavalli.'",
+
+  "conflict in sudan": "The conflict in Sudan is a complex power struggle involving the Sudanese Armed Forces (SAF) and the paramilitary Rapid Support Forces (RSF).",
+
+  "g7 summit 2023 location": "The 2023 G7 summit was held in Hiroshima, Japan.",
+
+  "nato secretary general": "The current Secretary General of NATO is Jens Stoltenberg.",
+
+  "brics nations": "The BRICS nations are Brazil, Russia, India, China, and South Africa.",
+
+  "sco full members": "The Shanghai Cooperation Organisation (SCO) full members include China, Russia, India, Pakistan, Kazakhstan, Kyrgyzstan, Tajikistan, and Uzbekistan.",
+
+  "asean members": "The members of ASEAN are Brunei, Cambodia, Indonesia, Laos, Malaysia, Myanmar, Philippines, Singapore, Thailand, and Vietnam.",
+
+  "current global inflation trends": "Current global inflation trends are influenced by factors like supply chain disruptions, energy prices, and post-pandemic demand.",
+
+  "climate change impacts": "Climate change impacts include rising sea levels, extreme weather events, and disruptions to ecosystems.",
+
+  "international efforts on climate change": "International efforts on climate change include agreements like the Paris Agreement and conferences like COP28.",
+
+  "global food security issues": "Global food security issues are exacerbated by conflict, climate change, and economic instability.",
+
+  "role of the un": "The UN plays a role in maintaining international peace and security, promoting human rights, and fostering sustainable development.",
+
+  "recent developments in the ukraine war": "Recent developments in the Ukraine war include ongoing fighting, international sanctions, and diplomatic efforts.",
+
+  "global energy crisis": "The global energy crisis is marked by high energy prices and concerns about supply security.",
+
+  "impact of the war in ukraine on global economy": "The war in Ukraine has had a significant impact on the global economy, including rising inflation and supply chain disruptions.",
+
+  "global refugee crisis": "The global refugee crisis is driven by conflict, persecution, and natural disasters.",
+
+  "situation in afghanistan": "The situation in Afghanistan remains complex following the Taliban takeover.",
+
+  "political situation in myanmar": "The political situation in Myanmar is marked by ongoing conflict and instability following the coup.",
+
+  "tensions in the south china sea": "Tensions in the South China Sea persist due to overlapping territorial claims.",
+
+  "nuclear proliferation concerns": "Nuclear proliferation concerns remain a significant global issue.",
+
+  "role of the world bank": "The World Bank provides financial and technical assistance to developing countries.",
+
+  "imf's role": "The International Monetary Fund (IMF) provides financial assistance and surveillance to member countries.",
+
+  "global economic outlook": "The global economic outlook is subject to uncertainty due to various factors, including geopolitical risks and inflation.",
+
+  "impact of technology on society": "Technology has a profound impact on society, including on communication, work, and social interactions.",
+
+  "rise of artificial intelligence": "The rise of artificial intelligence presents both opportunities and challenges.",
+
+  "cybersecurity threats": "Cybersecurity threats are increasing in frequency and sophistication.",
+
+  "global health challenges": "Global health challenges include pandemics, infectious diseases, and non-communicable diseases.",
+
+  "sustainable development goals": "The Sustainable Development Goals (SDGs) aim to address global challenges related to poverty, inequality, and climate change.",
+
+  "role of ngos": "Non-governmental organizations (NGOs) play a vital role in addressing social and humanitarian issues.",
+
+  "global trade agreements": "Global trade agreements aim to reduce barriers to international trade.",
+
+  "impact of globalization": "Globalization has led to increased interconnectedness but also challenges related to inequality and cultural homogenization.",
+
+  "future of work": "The future of work is being shaped by automation, technology, and changing demographics.",
+
+  "space exploration": "Space exploration continues with missions to the Moon, Mars, and beyond.",
+
+  "recent scientific discoveries": "Recent scientific discoveries are advancing our understanding of the universe and ourselves.",
+
+  "cultural trends": "Cultural trends are constantly evolving, influenced by technology, social media, and globalization.",
+
+  "global tourism trends": "Global tourism trends are affected by factors like economic conditions, travel restrictions, and sustainability concerns.",
+
+  "impact of social media": "Social media has a significant impact on communication, information dissemination, and social movements.",
+
+  "role of media in society": "The media plays a crucial role in informing the public and holding power to account.",
+
+  "challenges to democracy": "Democracy faces challenges in various parts of the world, including polarization, misinformation, and declining trust in institutions.",
+
+  "human rights issues": "Human rights issues persist in many countries, including violations of freedom of speech, assembly, and religion.",
+
+  "global inequality": "Global inequality remains a significant challenge, with disparities in wealth and opportunity.",
+
+  "poverty eradication efforts": "Efforts to eradicate poverty continue, but progress has been uneven.",
+
+  "role of education": "Education plays a crucial role in individual development and societal progress.",
+
+  "impact of urbanization": "Urbanization is leading to the growth of cities and associated challenges like housing, infrastructure, and pollution.",
+
+  "environmental conservation efforts": "Environmental conservation efforts are crucial to protecting biodiversity and ecosystems.",
+
+  "importance of water resources": "Water resources are essential for human life and sustainable development.",
+
+  "sustainable agriculture": "Sustainable agriculture practices are needed to ensure food security and protect the environment.",
+
+  "renewable energy sources": "Renewable energy sources are becoming increasingly important in the transition to a low-carbon economy.",
+
+  "new courses 2025": "NPR Arts and Science College has introduced B.Sc. Computer Science (Artificial Intelligence) and B.Sc. Artificial Intelligence & Data Science for the 2025 admissions.",
+
+  "postgraduate programs": "The college offers M.Sc. Computer Science and M.Com. Computer Applications as postgraduate programs.",
+
+  "undergraduate programs": "Existing undergraduate programs include B.A. Tamil, B.A. English, B.Sc. Physics, B.Sc. Chemistry, B.Sc. Mathematics, B.Sc. Computer Science, B.Sc. Information Technology, B.C.A., B.Com., B.Com. Computer Applications, and B.Com. Professional Accounting.",
+
+  "engineering programs": "NPR College of Engineering & Technology offers B.E. in Civil Engineering, Electrical & Electronics Engineering, Computer Science & Engineering, Electronics & Communication Engineering, Mechanical Engineering, B.Tech. in Artificial Intelligence & Data Science, Information Technology, and B.E. CSE (Artificial Intelligence & Machine Learning).",
+
+  "diploma programs": "NPR Polytechnic College offers diploma programs in Civil Engineering, Mechanical Engineering, and Electrical & Electronics Engineering.",
+
+  "nursing programs": "NPR College of Nursing and Research Institute offers B.Sc. Nursing, B.Sc. Cardiac Technology, B.Sc. Medical Laboratory Technology, B.Sc. Operation Theatre & Anaesthesia Technology, and B.Sc. Allied Health Sciences.",
+
+  "total courses": "NPR Arts and Science College offers 15 undergraduate programs and 2 postgraduate programs.",
+
+  "student and faculty strength": "NPR Arts and Science College has an enrollment of 1,237 students and 66 faculty members.",
+
+  "college motto": "The motto of NPR Arts and Science College is 'We Can, We Will, We Should; Making Impossible the Possible.'",
+
+  "recent placements": "In the 2023-2024 batch, a total of 285 students were placed, with key recruiters including Hasmec Technologies (116 offers), Foxconn (72 offers), and Delphi TVS (19 offers).",
+
+  "placement statistics engineering": "For the 2020-2024 batch, NPR College of Engineering & Technology saw 217 offers from 35 companies, including Gestamp Automotive Private Limited (43 offers), Kyungshin Industrial Mother Son Private Limited (37 offers), and Delphi TVS (16 offers).",
+
+  "placement statistics arts and science": "For the 2022-2023 batch, 155 students were placed with major recruiters like Apptivo (36 offers), Muthoot Finance (35 offers), and Nice Education (20 offers).",
+
+  "principal engineering college": "Dr. B. Maruthu Kannan, M.E., Ph.D. serves as the Principal of NPR College of Engineering & Technology.",
+
+  "college location": "NPR Group of Institutions is located at NPR Nagar, Natham, in the Dindigul District of Tamil Nadu, India.",
+
+  "admission process": "Prospective students can apply for admission online through the NPR Group of Institutions' official website."
+
+};
+
+
+
+        // Function to remove punctuation and convert input to lowercase
+
+        function sanitizeInput(input) {
+
+            return input.replace(/[^\w\s]/gi, '').toLowerCase();
+
+        }
+
+
+
+        // Function to check if the user input contains a predefined question (core match)
+
+        function findMatch(userInput) {
+
+            for (let key in customQA) {
+
+                if (userInput.includes(key)) {
+
+                    return customQA[key];
+
+                }
+
+            }
+
+            return null;
+
+        }
+
+
+
         async function checkWikipediaPage(query) {
+
             const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+
             try {
+
                 const response = await fetch(searchUrl);
+
                 const data = await response.json();
+
                 return data.query.search.length > 0 ? data.query.search[0].title : null;
+
             } catch (error) {
+
                 return null;
+
             }
+
         }
-    
+
+
+
         async function fetchWikipediaSummary(query) {
+
             const pageTitle = await checkWikipediaPage(query);
+
             if (!pageTitle) {
+
                 return "I couldn't find relevant information. Try rephrasing your query.";
+
             }
+
             const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`;
+
             try {
+
                 const response = await fetch(url);
+
                 if (!response.ok) throw new Error("No data found");
+
                 const data = await response.json();
+
                 return data.extract || "I couldn't find relevant information.";
+
             } catch (error) {
+
                 return "Sorry, I couldn't fetch the information. Try another query.";
+
             }
+
         }
-    
+
+
+
         async function sendMessage() {
-            const userInput = document.getElementById("user-input").value.trim();
+
+            const userInput = sanitizeInput(document.getElementById("user-input").value.trim());
+
             if (!userInput) return;
-            
+
+
+
             const chatBox = document.getElementById("chat-box");
+
             const userMessage = document.createElement("div");
+
             userMessage.classList.add("user-msg");
+
             userMessage.textContent = userInput;
+
             chatBox.appendChild(userMessage);
+
             document.getElementById("user-input").value = "";
+
             chatBox.scrollTop = chatBox.scrollHeight;
-            
+
+
+
             const botMessage = document.createElement("div");
+
             botMessage.classList.add("bot-msg");
+
             botMessage.textContent = "Searching...";
+
             chatBox.appendChild(botMessage);
+
             chatBox.scrollTop = chatBox.scrollHeight;
-            
-            const response = await fetchWikipediaSummary(userInput);
-            botMessage.textContent = response;
+
+
+
+            // Check if there's a custom match or fall back to Wikipedia search
+
+            const customResponse = findMatch(userInput);
+
+            if (customResponse) {
+
+                botMessage.textContent = customResponse;
+
+            } else {
+
+                const response = await fetchWikipediaSummary(userInput);
+
+                botMessage.textContent = response;
+
+            }
+
             chatBox.scrollTop = chatBox.scrollHeight;
+
         }
-    
+
+
+
         function handleKeyPress(event) {
+
             if (event.key === "Enter") sendMessage();
+
         }
 
-        if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("Service Worker Registered"))
-        .catch(error => console.log("Service Worker Registration Failed", error));
-}
+    </script>
 
-        function toggleTheme() {
-            document.body.classList.toggle("dark-mode");
-        }
-    
-        function refreshChat() {
-            document.getElementById("chat-box").innerHTML = '<div class="bot-msg">Hi! I\'m Acer Silva, your clothing assistant! How can I help you?</div>';
-        }
-    </script>
-    
-    </script>
+
+
 </body>
+
 </html>
